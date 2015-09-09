@@ -1,21 +1,19 @@
-var app = require('express')()
-  , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+var app = require('express')(),
+    server = require('http').createServer(app),
+    io = require('socket.io').listen(server),
+    alphabet = require('alphabetjs');
 
 server.listen(8080);
+console.log('Running at port 8080...');
+console.log(alphabet('MASHIRO', 'planar'));
 
-app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/client/index.html');
+app.get('/', function(req, res) {
+    res.sendfile(__dirname + '/client/index.html');
 });
 
-var wsArray = [];
-
-io.sockets.on('connection', function (socket) {
-  wsArray.push(socket);
-  socket.on('my other event', function (data) {
-    wsArray.forEach(function(socket){
-      socket.emit('news', data);
-    })
-    console.log(data);
-  });
+io.sockets.on('connection', function(socket) {
+    socket.on('drawFromClient', function(data) {
+        console.log(data);
+        socket.broadcast.emit('drawFromServer', data);
+    });
 });

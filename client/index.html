@@ -1,20 +1,53 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>socket.io</title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-<h1>socket.io</h1>
-<p>Welcome to socket.io</p>
 
-<script src="/socket.io/socket.io.js"></script>
-<script>
-var socket = io.connect('http://localhost:8080');
-socket.on('news', function (data) {
-console.log(data);
-//socket.emit('my other event', { my: 'data' });
-});
-</script>
+<head>
+  <title>Mashiro</title>
+  <style type="text/css">
+  canvas {
+    width: 800px;
+    height: 600px;
+  }
+  </style>
+</head>
+
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  var socket = io.connect('http://localhost:8080');
+  socket.on('drawFromServer', function(data) {
+
+    var ctx = document.getElementsByTagName('canvas')[0].getContext('2d');
+    ctx.beginPath();
+    ctx.arc(data.pageX, data.pageY, 10, 0, 360, false);
+    ctx.fillStyle = "red"; //填充颜色,默认是黑色
+    ctx.fill(); //画实心圆
+    //socket.emit('my other event', { my: 'data' });
+  });
+  var draw = false;
+
+  document.onmousedown = function(e) {
+    draw = true;
+  }
+  document.onmouseup = function(e) {
+    draw = false;
+  }
+  document.onmousemove = function(e) {
+    if (draw) {
+      var ctx = document.getElementsByTagName('canvas')[0].getContext('2d');
+      ctx.beginPath();
+      ctx.arc(e.pageX, e.pageY, 10, 0, 360, false);
+      ctx.fillStyle = "red"; //填充颜色,默认是黑色
+      ctx.fill(); //画实心圆
+
+      socket.emit('drawFromClient', {
+        pageY: e.pageY,
+        pageX: e.pageX
+      });
+    }
+  }
+  </script>
+  <canvas width="800" height="600"></canvas>
 </body>
+
 </html>
