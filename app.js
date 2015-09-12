@@ -16,4 +16,7 @@ io.sockets.on('connection', function(socket) {
         console.log(data);
         socket.broadcast.emit('drawFromServer', data);
     });
+    socket.on('console',function(data){
+        socket.broadcast.emit('alert', data);
+    })
 });
